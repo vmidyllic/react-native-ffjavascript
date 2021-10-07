@@ -1,15 +1,9 @@
 import * as Scalar from "./scalar.js";
 
-import F1Field_native from "./f1field_native.js";
 import F1Field_bigint from "./f1field_bigint.js";
 
-const supportsNativeBigInt = typeof BigInt === "function";
-let _F1Field;
-if (supportsNativeBigInt) {
-    _F1Field = F1Field_native;
-} else {
-    _F1Field = F1Field_bigint;
-}
+
+let  _F1Field = F1Field_bigint;
 
 export default  class F1Field extends _F1Field {
 

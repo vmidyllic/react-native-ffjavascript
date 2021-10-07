@@ -1,15 +1,9 @@
 
-import * as Scalar_native from "./scalar_native.js";
 import * as Scalar_bigint from "./scalar_bigint.js";
 
-const supportsNativeBigInt = typeof BigInt === "function";
 
 let Scalar = {};
-if (supportsNativeBigInt) {
-    Object.assign(Scalar, Scalar_native);
-} else {
-    Object.assign(Scalar, Scalar_bigint);
-}
+Object.assign(Scalar, Scalar_bigint);
 
 
 // Returns a buffer with Little Endian Representation

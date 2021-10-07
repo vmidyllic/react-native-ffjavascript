@@ -3,12 +3,9 @@ import * as utils_bigint from "./utils_bigint.js";
 
 let utils = {};
 
-const supportsNativeBigInt = typeof BigInt === "function";
-if (supportsNativeBigInt) {
-    Object.assign(utils, utils_native);
-} else {
-    Object.assign(utils, utils_bigint);
-}
+
+Object.assign(utils, utils_bigint);
+
 
 
 const _revTable = [];

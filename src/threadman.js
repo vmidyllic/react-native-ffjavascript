@@ -23,8 +23,8 @@ const MEM_SIZE = 25;  // Memory size in 64K Pakes (1600Kb)
 
 
 import thread from "./threadman_thread.js";
-import os from "os";
-import Worker from "web-worker";
+// import os from "os";
+// import Worker from "web-worker";
 
 class Deferred {
     constructor() {
@@ -105,44 +105,45 @@ export default async function buildThreadManager(wasm, singleThread) {
         }]);
         tm.concurrency  = 1;
     } else {
-        tm.workers = [];
-        tm.pendingDeferreds = [];
-        tm.working = [];
+        console.log("only single threading is supported")
+        // tm.workers = [];
+        // tm.pendingDeferreds = [];
+        // tm.working = [];
 
-        let concurrency;
+        // let concurrency;
 
-        if ((typeof(navigator) === "object") && navigator.hardwareConcurrency) {
-            concurrency = navigator.hardwareConcurrency;
-        } else {
-            concurrency = os.cpus().length;
-        }
-        if (concurrency === 0 ){ //support browser
-            concurrency = 1
-        }
-        // Limit to 64 threads for memory reasons.
-        if (concurrency>64) concurrency=64;
-        tm.concurrency = concurrency;
+        // if ((typeof(navigator) === "object") && navigator.hardwareConcurrency) {
+        //     concurrency = navigator.hardwareConcurrency;
+        // } else {
+        //     concurrency = os.cpus().length;
+        // }
+        // if (concurrency === 0 ){ //support browser
+        //     concurrency = 1
+        // }
+        // // Limit to 64 threads for memory reasons.
+        // if (concurrency>64) concurrency=64;
+        // tm.concurrency = concurrency;
 
-        for (let i = 0; i<concurrency; i++) {
+        // for (let i = 0; i<concurrency; i++) {
 
-            tm.workers[i] = new Worker(workerSource);
+        //     tm.workers[i] = new Worker(workerSource);
 
-            tm.workers[i].addEventListener("message", getOnMsg(i));
+        //     tm.workers[i].addEventListener("message", getOnMsg(i));
 
-            tm.working[i]=false;
-        }
+        //     tm.working[i]=false;
+        // }
 
-        const initPromises = [];
-        for (let i=0; i<tm.workers.length;i++) {
-            const copyCode = base64ToArrayBuffer(wasm.code).slice();
-            initPromises.push(tm.postAction(i, [{
-                cmd: "INIT",
-                init: MEM_SIZE,
-                code: copyCode
-            }], [copyCode.buffer]));
-        }
+        // const initPromises = [];
+        // for (let i=0; i<tm.workers.length;i++) {
+        //     const copyCode = base64ToArrayBuffer(wasm.code).slice();
+        //     initPromises.push(tm.postAction(i, [{
+        //         cmd: "INIT",
+        //         init: MEM_SIZE,
+        //         code: copyCode
+        //     }], [copyCode.buffer]));
+        // }
 
-        await Promise.all(initPromises);
+        // await Promise.all(initPromises);
 
     }
     return tm;

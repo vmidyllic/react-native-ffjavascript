@@ -5,16 +5,12 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var bigInt = require('big-integer');
 var crypto = require('crypto');
 var wasmcurves = require('wasmcurves');
-var os = require('os');
-var Worker = require('web-worker');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var bigInt__default = /*#__PURE__*/_interopDefaultLegacy(bigInt);
 var crypto__default = /*#__PURE__*/_interopDefaultLegacy(crypto);
 var wasmcurves__default = /*#__PURE__*/_interopDefaultLegacy(wasmcurves);
-var os__default = /*#__PURE__*/_interopDefaultLegacy(os);
-var Worker__default = /*#__PURE__*/_interopDefaultLegacy(Worker);
 
 function fromString(s, radix) {
     if (typeof s == "string") {
@@ -4181,6 +4177,8 @@ function thread(self) {
 
 // const MEM_SIZE = 1000;  // Memory size in 64K Pakes (512Mb)
 const MEM_SIZE = 25;  // Memory size in 64K Pakes (1600Kb)
+// import os from "os";
+// import Worker from "web-worker";
 
 class Deferred {
     constructor() {
@@ -4217,8 +4215,7 @@ function stringToBase64(str) {
     }
 }
 
-const threadSource = stringToBase64("(" + thread.toString() + ")(self)");
-const workerSource = "data:application/javascript;base64," + threadSource;
+stringToBase64("(" + thread.toString() + ")(self)");
 
 
 
@@ -4261,62 +4258,48 @@ async function buildThreadManager(wasm, singleThread) {
         }]);
         tm.concurrency  = 1;
     } else {
-        tm.workers = [];
-        tm.pendingDeferreds = [];
-        tm.working = [];
+        console.log("only single threading is supported");
+        // tm.workers = [];
+        // tm.pendingDeferreds = [];
+        // tm.working = [];
 
-        let concurrency;
+        // let concurrency;
 
-        if ((typeof(navigator) === "object") && navigator.hardwareConcurrency) {
-            concurrency = navigator.hardwareConcurrency;
-        } else {
-            concurrency = os__default['default'].cpus().length;
-        }
-        if (concurrency === 0 ){ //support browser
-            concurrency = 1;
-        }
-        // Limit to 64 threads for memory reasons.
-        if (concurrency>64) concurrency=64;
-        tm.concurrency = concurrency;
+        // if ((typeof(navigator) === "object") && navigator.hardwareConcurrency) {
+        //     concurrency = navigator.hardwareConcurrency;
+        // } else {
+        //     concurrency = os.cpus().length;
+        // }
+        // if (concurrency === 0 ){ //support browser
+        //     concurrency = 1
+        // }
+        // // Limit to 64 threads for memory reasons.
+        // if (concurrency>64) concurrency=64;
+        // tm.concurrency = concurrency;
 
-        for (let i = 0; i<concurrency; i++) {
+        // for (let i = 0; i<concurrency; i++) {
 
-            tm.workers[i] = new Worker__default['default'](workerSource);
+        //     tm.workers[i] = new Worker(workerSource);
 
-            tm.workers[i].addEventListener("message", getOnMsg(i));
+        //     tm.workers[i].addEventListener("message", getOnMsg(i));
 
-            tm.working[i]=false;
-        }
+        //     tm.working[i]=false;
+        // }
 
-        const initPromises = [];
-        for (let i=0; i<tm.workers.length;i++) {
-            const copyCode = base64ToArrayBuffer(wasm.code).slice();
-            initPromises.push(tm.postAction(i, [{
-                cmd: "INIT",
-                init: MEM_SIZE,
-                code: copyCode
-            }], [copyCode.buffer]));
-        }
+        // const initPromises = [];
+        // for (let i=0; i<tm.workers.length;i++) {
+        //     const copyCode = base64ToArrayBuffer(wasm.code).slice();
+        //     initPromises.push(tm.postAction(i, [{
+        //         cmd: "INIT",
+        //         init: MEM_SIZE,
+        //         code: copyCode
+        //     }], [copyCode.buffer]));
+        // }
 
-        await Promise.all(initPromises);
+        // await Promise.all(initPromises);
 
     }
     return tm;
-
-    function getOnMsg(i) {
-        return function(e) {
-            let data;
-            if ((e)&&(e.data)) {
-                data = e.data;
-            } else {
-                data = e;
-            }
-
-            tm.working[i]=false;
-            tm.pendingDeferreds[i].resolve(data);
-            tm.processWorks();
-        };
-    }
 
 }
 

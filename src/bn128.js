@@ -6,6 +6,7 @@ global.curve_bn128 = null;
 
 export default async function buildBn128(singleThread) {
 
+    console.log("buildBn128 - singleThread", singleThread)
     if ((!singleThread)&&(global.curve_bn128)) return global.curve_bn128;
     const params = {
         name: "bn128",

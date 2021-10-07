@@ -1,7 +1,7 @@
 {
   "name": "react-native-ffjavascript",
   "type": "module",
-  "version": "0.2.39",
+  "version": "0.0.1",
   "description": "Finite Field Library in Javascript (react-native)",
   "main": "./build/main.cjs",
   "module": "./main.js",
